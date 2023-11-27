@@ -1,29 +1,30 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
-#define MAX_LENGTH 100 // Longueur maximale de la commande
+#define MAX_LENGTH 100
 
 int main() {
-    char input[MAX_LENGTH]; // Variable pour stocker la commande de l'utilisateur
+    char input[MAX_LENGTH];
+    char prompt[] = "Bienvenue dans le Shell ENSEA.\nPour quitter, tapez 'exit'.\nenseash % ";
 
-    printf("Bienvenue dans le Shell ENSEA.\nPour quitter, tapez 'exit'.\nenseash %% ");
+    write(STDOUT_FILENO, prompt, strlen(prompt)); // Utilisation de write pour afficher le prompt
 
-    while (1) { // Boucle infinie pour lire continuellement les commandes de l'utilisateur
-        fgets(input, MAX_LENGTH, stdin); // Lire la commande de l'utilisateur
+    while (1) {
+        read(STDIN_FILENO, input, MAX_LENGTH); // Lecture de l'entrée utilisateur
 
-        // Supprimer le saut de ligne à la fin de l'entrée utilisateur
-        input[strcspn(input, "\n")] = '\0';
+        input[strcspn(input, "\n")] = '\0'; // Supprimer le saut de ligne à la fin de l'entrée utilisateur
 
-        if (strcmp(input, "exit") == 0) { // Vérifier si l'utilisateur veut quitter
-            printf("Au revoir !\n");
-            break; // Sortir de la boucle while pour terminer le programme
+        if (strcmp(input, "exit") == 0) {
+            write(STDOUT_FILENO, "Au revoir !\n", strlen("Au revoir !\n"));
+            break;
         }
 
-        // Ici, vous pouvez ajouter la logique pour exécuter les commandes entrées par l'utilisateur.
-        // Par exemple, vous pouvez utiliser la fonction system pour exécuter les commandes dans le shell.
+        // Ajoutez la logique pour exécuter les commandes ici (par exemple, en utilisant la fonction system).
 
-        printf("Commande non prise en charge : %s\nenseash %% ", input); // Afficher un message par défaut pour les autres commandes
+        write(STDOUT_FILENO, "Commande non prise en charge : ", strlen("Commande non prise en charge : "));
+        write(STDOUT_FILENO, input, strlen(input));
+        write(STDOUT_FILENO, "\nenseash % ", strlen("\nenseash % ")); // Afficher le prompt pour la prochaine commande
     }
 
     return 0;
